@@ -1,8 +1,13 @@
 (() => {
+  var __create = Object.create;
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -15,111 +20,90 @@
     }
     return to;
   };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+  // shltr-res-ns:solid-js/web
+  var require_web = __commonJS({
+    "shltr-res-ns:solid-js/web"(exports, module) {
+      module.exports = shelter.solidWeb;
+    }
+  });
 
   // plugins/show raw message/index.jsx
   var show_raw_message_exports = {};
   __export(show_raw_message_exports, {
     onUnload: () => onUnload
   });
+  var import_web = __toESM(require_web(), 1);
+  var import_web2 = __toESM(require_web(), 1);
+  var import_web3 = __toESM(require_web(), 1);
+  var _tmpl$ = /* @__PURE__ */ (0, import_web.template)(`<code></code>`, 2);
   var {
-    http: {
-      intercept
-    },
     util: {
-      log
+      getFiber,
+      reactFiberWalker
+    },
+    flux: {
+      dispatcher,
+      stores
+    },
+    observeDom,
+    ui: {
+      Button,
+      openModal,
+      ModalBody,
+      ModalFooter,
+      ModalRoot,
+      ModalHeader,
+      ModalSizes
     }
   } = shelter;
-  var endings = [
-    "rawr x3",
-    "OwO",
-    "UwU",
-    "o.O",
-    "-.-",
-    ">w<",
-    "(\u2445\u02D8\uA4B3\u02D8)",
-    "(\uA20D\u1D17\uA20D)",
-    "(\u02D8\u03C9\u02D8)",
-    "(U \u1D55 U\u2741)",
-    "\u03C3\u03C9\u03C3",
-    "\xF2\u03C9\xF3",
-    "(///\u02EC///\u273F)",
-    "(U \uFE4F U)",
-    "( \u0361o \u03C9 \u0361o )",
-    "\u0298w\u0298",
-    ":3",
-    ":3",
-    // important enough to have twice
-    ":3",
-    // important enough to have thrice
-    "XD",
-    "nyaa~~",
-    "mya",
-    ">_<",
-    "\u{1F633}",
-    "\u{1F97A}",
-    "\u{1F633}\u{1F633}\u{1F633}",
-    "rawr",
-    "^^",
-    "^^;;",
-    "(\u02C6 \uFECC \u02C6)\u2661",
-    "^\u2022\uFECC\u2022^",
-    "/(^\u2022\u03C9\u2022^)",
-    "(\u273Fo\u03C9o)"
-  ];
-  var replacements = [["small", "smol"], ["cute", "kawaii"], ["fluff", "floof"], ["love", "luv"], ["stupid", "baka"], ["what", "nani"], ["meow", "nya"], ["hello", "hewwo"]];
-  function selectRandomElement(arr) {
-    const randomIndex = Math.floor(Math.random() * arr.length);
-    return arr[randomIndex];
+  dispatcher.subscribe("CONTEXT_MENU_OPEN", handler);
+  function handler(dispatch) {
+    const unObserve = observeDom("[id^=message-copy-link]", (elem) => {
+      const messageId = reactFiberWalker(getFiber(elem), "message", true).pendingProps.message.id;
+      elem.insertAdjacentElement("afterend", (0, import_web3.createComponent)(Button, {
+        size: "MEDIUM",
+        get onClick() {
+          return clicked.bind(null, getMessageObject(messageId));
+        },
+        children: "show raw message object"
+      }));
+      unObserve();
+    });
+    setTimeout(unObserve, 500);
   }
-  var isOneCharacterString = (str) => {
-    return str.split("").every((char) => char === str[0]);
-  };
-  function replaceString(inputString) {
-    let replaced = false;
-    for (const replacement of replacements) {
-      const regex = new RegExp(`\\b${replacement[0]}\\b`, "gi");
-      if (regex.test(inputString)) {
-        inputString = inputString.replace(regex, replacement[1]);
-        replaced = true;
+  function clicked(a) {
+    const remove = openModal((p) => (0, import_web3.createComponent)(ModalRoot, {
+      get size() {
+        return ModalSizes.SMALL;
+      },
+      get children() {
+        const _el$ = _tmpl$.cloneNode(true);
+        _el$.style.setProperty("overflowX", "scroll");
+        _el$.style.setProperty("overflowY", "scroll");
+        (0, import_web2.insert)(_el$, () => JSON.stringify(a, null, 2));
+        return _el$;
       }
-    }
-    return replaced ? inputString : false;
+    }));
+    dispatcher.dispatch({
+      type: "CONTEXT_MENU_CLOSE"
+    });
   }
-  function uwuify(message) {
-    const rule = /\S+|\s+/g;
-    const words = message.match(rule);
-    let answer = "";
-    if (words === null)
-      return "";
-    for (let i = 0; i < words.length; i++) {
-      if (isOneCharacterString(words[i]) || words[i].startsWith("https://")) {
-        answer += words[i];
-        continue;
-      }
-      if (!replaceString(words[i])) {
-        answer += words[i].replace(/n(?=[aeo])/g, "ny").replace(/l|r/g, "w");
-      } else
-        answer += replaceString(words[i]);
-    }
-    answer += " " + selectRandomElement(endings);
-    return answer;
+  function getMessageObject(messageId) {
+    const fluxMessages = stores.MessageStore.getMessages(stores.SelectedChannelStore.getChannelId());
+    return fluxMessages._map[messageId];
   }
-  var unintercept = intercept("post", /\/channels\/\d+\/messages/, (req, send) => {
-    let newContent = req?.body?.content;
-    log(newContent);
-    if (!newContent) {
-      return send(req);
-    }
-    if (newContent.startsWith("!u ")) {
-      newContent = newContent.replace("!u ", "", 1);
-      req.body.content = uwuify(newContent.toLowerCase());
-    }
-    return send(req);
-  });
   function onUnload() {
-    log("Goodbye, Wowwd fwom shewtew! ^^;;");
-    unintercept();
+    dispatcher.unsubscribe("CONTEXT_MENU_OPEN", handler);
   }
   return __toCommonJS(show_raw_message_exports);
 })();
